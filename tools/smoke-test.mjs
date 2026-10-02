@@ -36,6 +36,10 @@ await page.screenshot({ path: shots + '01-start.png', fullPage: true });
 
 ok('page title is SheetSnap', (await page.title()) === 'SheetSnap');
 ok('Summarize button starts disabled', await page.locator('#runBtn').isDisabled());
+/* `hidden` must actually hide: a .filecard rule setting display once beat it,
+   leaving an empty card with a Remove button on the first screen. */
+ok('no empty file card before a file is chosen', await page.locator('#fileCard').isHidden());
+ok('no stray error box on the first screen', await page.locator('#errBox').isHidden());
 
 await page.locator('.opt > summary').click();
 await page.locator('#optTitle').fill('Customer Orders Recap - Q1 2026');

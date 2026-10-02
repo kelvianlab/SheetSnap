@@ -44,6 +44,10 @@
 }
 
 *{box-sizing:border-box}
+/* Any author rule that sets `display` outranks the browser's own rule for the
+   `hidden` attribute, which is how the empty file card ended up on screen
+   before a file was ever chosen. Settle it once, globally. */
+[hidden]{display:none !important}
 html,body{margin:0;padding:0}
 body{
   background:var(--surface-0); color:var(--text-primary);

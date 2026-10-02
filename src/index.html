@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SheetSnap</title>
+<meta name="description" content="Turn any Excel file into a clean 2-page summary report. Runs offline in your browser.">
+<style>/*@CSS*/</style>
+</head>
+<body>
+
+<header class="appbar no-print">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M3.5 9.5h17M9.5 9.5V20.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12.6 13.3l2.1 2.1 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <div class="brand-name">SheetSnap</div>
+      <div class="brand-tag">Excel &rarr; 2-page summary</div>
+    </div>
+  </div>
+  <div class="appbar-right">
+    <span class="pill" title="No internet connection is used. Your file never leaves this computer.">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="pill-ico"><path d="M12 2.5l7 3v6c0 4.2-2.9 8.1-7 10-4.1-1.9-7-5.8-7-10v-6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      100% offline &middot; private
+    </span>
+    <button type="button" id="themeBtn" class="btn btn-ghost btn-icon" aria-label="Switch between light and dark">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ STEP 1: pick a file ============ -->
+  <section id="screenStart" class="no-print">
+    <h1 class="h1">Make a summary of your Excel file</h1>
+    <p class="lede">Three steps. No installing, no account, no internet. Your file is read right here on your own computer.</p>
+
+    <div id="drop" class="drop" tabindex="0" role="button" aria-label="Choose an Excel file, or drag one here">
+      <svg class="drop-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 16.5V4.2M7.8 8.4L12 4.2l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 15v3.2A1.8 1.8 0 005.8 20h12.4A1.8 1.8 0 0020 18.2V15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div class="drop-title">Step 1 &mdash; Click here to choose your file</div>
+      <div class="drop-sub">or drag the file onto this box</div>
+      <div class="drop-types">Works with .xlsx &middot; .xls &middot; .xlsm &middot; .csv</div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.xlsm,.xlsb,.csv,.tsv,.ods" hidden>
+    </div>
+
+    <div id="fileCard" class="filecard" hidden>
+      <svg class="filecard-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.8h7.2L19 8.6V21H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.2 2.8v5.8H19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <div class="filecard-meta">
+        <div class="filecard-name" id="fileName">&mdash;</div>
+        <div class="filecard-sub" id="fileSub">&mdash;</div>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="clearBtn">Remove</button>
+    </div>
+
+    <div class="runrow">
+      <button type="button" id="runBtn" class="btn btn-primary btn-xl" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4.8l13.2 7.2-13.2 7.2z" fill="currentColor"/></svg>
+        Step 2 &mdash; Summarize
+      </button>
+      <span class="runhint" id="runHint">Choose a file first.</span>
+    </div>
+
+    <details class="opt">
+      <summary>Optional &mdash; add a report title and your name <span class="opt-badge">you can skip this</span></summary>
+      <div class="optgrid">
+        <label>Report title<input type="text" id="optTitle" placeholder="e.g. HVAC Procurement Recap"></label>
+        <label>Prepared by<input type="text" id="optAuthor" placeholder="e.g. Andi / Engineering Dept."></label>
+        <label class="optwide">Why this report exists (the &ldquo;Why&rdquo;)<input type="text" id="optWhy" placeholder="e.g. Monthly PO review for the client contract"></label>
+      </div>
+    </details>
+
+    <div id="errBox" class="err" hidden role="alert"></div>
+  </section>
+
+  <!-- ============ STEP 3: the report ============ -->
+  <section id="screenReport" hidden>
+    <div class="toolbar no-print">
+      <button type="button" class="btn btn-primary" id="printBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.8h10V9M7 18H5.2A1.2 1.2 0 014 16.8V10.2A1.2 1.2 0 015.2 9h13.6A1.2 1.2 0 0120 10.2v6.6A1.2 1.2 0 0118.8 18H17M7 14h10v6.2H7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        Save as PDF / Print
+      </button>
+      <button type="button" class="btn" id="xlsxBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v12M7.8 11.3L12 15.5l4.2-4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 19.5h15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Download as Excel
+      </button>
+      <button type="button" class="btn btn-ghost" id="againBtn">Start over</button>
+      <span class="toolhint">Tip: in the print window choose <b>A4</b> and <b>Save as PDF</b>.</span>
+    </div>
+    <div id="report" class="report"></div>
+  </section>
+
+</main>
+
+<footer class="foot no-print">
+  SheetSnap &middot; open source &middot; MIT License &middot; nothing you open here is uploaded anywhere
+</footer>
+
+<script>/*@VENDOR*/</script>
+<script>/*@APP*/</script>
+</body>
+</html>

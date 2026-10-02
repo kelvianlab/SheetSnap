@@ -1,0 +1,27 @@
+name: Idea or improvement
+description: Suggest something that would make SheetSnap more useful
+title: "[Idea] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is awkward today?
+      placeholder: "I have to retype the vendor name every time because..."
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like instead?
+    validations:
+      required: true
+  - type: checkboxes
+    id: plugplay
+    attributes:
+      label: Plug and play
+      description: |
+        SheetSnap's core promise is one file, no install, no internet.
+      options:
+        - label: My idea can work without the user installing anything or going online
+          required: false

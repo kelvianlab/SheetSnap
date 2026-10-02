@@ -1,0 +1,43 @@
+name: Bug report
+description: Something in the report is wrong, or the app will not work
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. You do not need to be technical to file one —
+        just tell us what you did and what you expected.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: "I pressed Summarize and the total for my Price column was too low."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Which browser did you use?
+      placeholder: "Chrome / Edge / Safari / Firefox — and the version if you know it"
+  - type: textarea
+    id: file
+    attributes:
+      label: Can you attach a small example file?
+      description: |
+        Hugely helpful. Please remove or replace any real customer, vendor,
+        salary or pricing data first — a few made-up rows that still show the
+        problem are perfect.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you send
+      options:
+        - label: The example file I am attaching contains no confidential data
+          required: false

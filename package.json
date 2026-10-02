@@ -1,0 +1,17 @@
+{
+  "name": "sheetsnap",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Turn any Excel file into a clean 2-page summary report. Single self-contained HTML file.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "example": "node tools/make-example.mjs",
+    "test": "node build.mjs && node tools/smoke-test.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0",
+    "xlsx": "0.18.5"
+  }
+}

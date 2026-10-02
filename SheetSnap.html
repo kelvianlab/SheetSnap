@@ -343,9 +343,9 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
     <details class="opt">
       <summary>Optional &mdash; add a report title and your name <span class="opt-badge">you can skip this</span></summary>
       <div class="optgrid">
-        <label>Report title<input type="text" id="optTitle" placeholder="e.g. HVAC Procurement Recap"></label>
-        <label>Prepared by<input type="text" id="optAuthor" placeholder="e.g. Andi / Engineering Dept."></label>
-        <label class="optwide">Why this report exists (the &ldquo;Why&rdquo;)<input type="text" id="optWhy" placeholder="e.g. Monthly PO review for the client contract"></label>
+        <label>Report title<input type="text" id="optTitle" placeholder="e.g. Q1 Sales Recap"></label>
+        <label>Prepared by<input type="text" id="optAuthor" placeholder="e.g. Sales Admin"></label>
+        <label class="optwide">Why this report exists (the &ldquo;Why&rdquo;)<input type="text" id="optWhy" placeholder="e.g. Quarterly review for the management meeting"></label>
       </div>
     </details>
 
@@ -501,7 +501,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   /* ---------------------------------------------------------------
      1. Column-name vocabulary
         Used to guess what a column means. English + Indonesian,
-        because real procurement sheets mix both.
+        because real-world spreadsheets mix both.
      --------------------------------------------------------------- */
   var VOCAB = {
     unitRate: /(unit ?price|unit ?cost|unit ?rate|harga ?satuan|price ?per|cost ?per|rate ?per|per ?unit|\/ ?unit|\bupp\b)/i,

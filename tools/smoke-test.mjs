@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { mkdirSync } from 'node:fs';
 
 const app = fileURLToPath(new URL('../SheetSnap.html', import.meta.url));
-const xlsx = fileURLToPath(new URL('../examples/sample-procurement.xlsx', import.meta.url));
+const xlsx = fileURLToPath(new URL('../examples/sample-sales-orders.xlsx', import.meta.url));
 const shots = fileURLToPath(new URL('../.test-output/', import.meta.url));
 mkdirSync(shots, { recursive: true });
 
@@ -38,9 +38,9 @@ ok('page title is SheetSnap', (await page.title()) === 'SheetSnap');
 ok('Summarize button starts disabled', await page.locator('#runBtn').isDisabled());
 
 await page.locator('.opt > summary').click();
-await page.locator('#optTitle').fill('HVAC Procurement Recap - Q1 2026');
-await page.locator('#optAuthor').fill('Engineering Dept.');
-await page.locator('#optWhy').fill('Monthly PO review for the client contract.');
+await page.locator('#optTitle').fill('Customer Orders Recap - Q1 2026');
+await page.locator('#optAuthor').fill('Sales Admin');
+await page.locator('#optWhy').fill('Quarterly sales review across all three channels.');
 await page.locator('#fileInput').setInputFiles(xlsx);
 
 ok('file card appears', await page.locator('#fileCard').isVisible());
@@ -63,26 +63,28 @@ const tiles = await page.locator('#page1 .sheet').first().locator('.tile').count
 ok('first sheet has 5 metric tiles', tiles === 5, `got ${tiles}`);
 
 const body = await page.locator('#page1').innerText();
-ok('money column became the headline metric', /Total Price \(IDR\)/.test(body));
+ok('money column became the headline metric', /Total Amount \(IDR\)/.test(body));
 ok('header row below a title row was detected', /header detected on row 4/.test(body));
-ok('vendor column answered "Who"', /Carrier Indonesia/.test(body));
-ok('date column answered "When"', /2026-01-12 to 2026-04-02/.test(body));
-ok('typed purpose answered "Why"', /Monthly PO review/.test(body));
+ok('customer column answered "Who"', /Siti Rahayu/.test(body));
+ok('date column answered "When"', /2026-01-08 to 2026-03-18/.test(body));
+ok('typed purpose answered "Why"', /Quarterly sales review/.test(body));
 ok('empty sheet was skipped, not crashed', /no data rows found/.test(body));
-/* Chiller header sits on row 4, so its data really is rows 5-11 in Excel.
+/* The Online Store header sits on row 4, so its data really is rows 5-11
+   in Excel.
    The printed formula must match the user's actual file, not a guess. */
 ok('printed formula matches the real Excel rows', /=SUM\(G5:G11\)/.test(body));
 ok('blank cells are reported honestly', /empty cell/.test(body));
 
 const p2 = await page.locator('#page2').innerText();
-/* 3,700,000,000 + 1,620,000,000 + 3,720,000,000 + 1,850,000,000 + 2,820,000,000
-   + 1,240,000,000 + 3,240,000,000  (chiller)
-   + 852,000,000 + 672,000,000 + 1,136,000,000 + 655,000,000 + 504,000,000
-   + 994,000,000  (ahu)
-   + 428,000,000 + 512,000,000 + 321,000,000 + 389,000,000  (pumps) */
-const expected = 3700e6+1620e6+3720e6+1850e6+2820e6+1240e6+3240e6
-               + 852e6+672e6+1136e6+655e6+504e6+994e6
-               + 428e6+512e6+321e6+389e6;
+/* Online Store   1,350,000 + 1,250,000 + 1,600,000 + 900,000
+                  + 1,100,000 + 1,920,000 + 2,500,000   = 10,620,000
+   Retail Branch  1,360,000 + 1,620,000 +   680,000 + 1,580,000
+                  + 1,080,000 + 1,550,000               =  7,870,000
+   Wholesale      9,800,000 + 6,250,000 + 14,400,000 + 7,500,000
+                                                        = 37,950,000 */
+const expected = 1350000 + 1250000 + 1600000 + 900000 + 1100000 + 1920000 + 2500000
+               + 1360000 + 1620000 + 680000 + 1580000 + 1080000 + 1550000
+               + 9800000 + 6250000 + 14400000 + 7500000;
 ok('cross-sheet grand total is arithmetically correct',
    p2.includes(expected.toLocaleString('en-US')), `expected ${expected.toLocaleString('en-US')}`);
 ok('total record count correct (17)', /17 records in total/.test(p2));

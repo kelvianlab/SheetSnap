@@ -94,9 +94,9 @@ For each sheet in your file, you get:
 
 **The 5 most important numbers** — and for each one, *exactly how it was calculated*:
 
-> **Total Price (IDR) — 18,190,000,000**
+> **Total Amount (IDR) — 10,620,000**
 > `=SUM(G5:G11)`
-> SUM of column "Total Price (IDR)" (G) · 7 values used, no empty cells
+> SUM of column "Total Amount (IDR)" (G) · 7 values used, no empty cells
 
 Nothing is a black box. Every number names its column, its formula, and how many
 rows went into it, so you can check it yourself in Excel in ten seconds.
@@ -154,8 +154,9 @@ Full technical detail: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 `.xlsx` · `.xls` · `.xlsm` · `.xlsb` · `.csv` · `.tsv` · `.ods`
 
 Want to try it before using your real data? Use the example file in this repo:
-[`examples/sample-procurement.xlsx`](examples/sample-procurement.xlsx) — a
-realistic purchase-order workbook with three sheets.
+[`examples/sample-sales-orders.xlsx`](examples/sample-sales-orders.xlsx) — a
+small business tracking customer orders across three sales channels, with a
+fourth notes tab that SheetSnap correctly skips.
 
 ---
 
@@ -172,8 +173,9 @@ one, so:
 | Use **real dates**, not text | Then the "When" answer and the time-span figure work. |
 
 Helpful column names (English or Indonesian both work) let SheetSnap guess better:
-`Total`, `Price`, `Harga`, `Qty`, `Jumlah`, `Vendor`, `Supplier`, `Location`,
-`Lokasi`, `Date`, `Tanggal`, `Status`, `Payment Term`, `Lead Time`, `Capacity`.
+`Total`, `Amount`, `Price`, `Harga`, `Qty`, `Jumlah`, `Weight`, `Berat`,
+`Customer`, `Vendor`, `Supplier`, `City`, `Kota`, `Location`, `Lokasi`, `Date`,
+`Tanggal`, `Status`, `Payment Method`, `Delivery Days`, `Discount`, `Capacity`.
 
 ---
 
@@ -224,7 +226,7 @@ src/app.js              the whole engine: header detection, column profiling,
                         metric selection, 5W1H, consolidation, rendering, export
 src/vendor/             SheetJS 0.18.5 (Apache-2.0), bundled so the app works offline
 build.mjs               inlines src/* into SheetSnap.html
-tools/make-example.mjs  regenerates examples/sample-procurement.xlsx
+tools/make-example.mjs  regenerates examples/sample-sales-orders.xlsx
 tools/smoke-test.mjs    drives the real built file in a real browser and checks the output
 ```
 

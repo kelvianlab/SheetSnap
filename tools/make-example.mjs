@@ -1,47 +1,80 @@
-/* Generates examples/sample-procurement.xlsx - a realistic 3-sheet file
-   used in the README walkthrough and by tools/smoke-test.mjs. */
+/* Generates examples/sample-sales-orders.xlsx - a realistic 3-sheet workbook
+   used in the README walkthrough and by tools/smoke-test.mjs.
+
+   The scenario is deliberately ordinary: a small business tracking customer
+   orders across three sales channels. It is the shape most people's
+   spreadsheets actually have, and it exercises every part of the engine:
+     - a title block above the header row on one sheet, none on another
+     - money, quantity, weight, per-unit price, duration and percentage columns
+     - customer, city, date, payment and status columns for the 5W1H panel
+     - a third sheet missing two of the columns, so consolidation has to match
+       on column name rather than position
+     - a notes tab with no table at all, which must be skipped
+   Totals are gross (Qty x Unit Price); the discount column is kept separate so
+   every figure in the report can be checked by hand. */
 import XLSX from 'xlsx';
 import { writeFileSync } from 'node:fs';
 
 const d = (s) => new Date(s + 'T00:00:00Z');
 
-const chiller = [
-  ['PT SEJAHTERA ENGINEERING'], ['Purchase Order Recap - Chiller Units'], [],
-  ['PO No','Vendor','Site Location','PO Date','Qty (Unit)','Unit Price (IDR)','Total Price (IDR)','Discount (%)','Lead Time (Days)','Capacity (TR)','Payment Term','Status','Remarks'],
-  ['PO-2401','Carrier Indonesia','Jakarta - Rooftop',d('2026-01-12'),2,1850000000,3700000000,7.5,95,350,'30/70 LC','Delivered','Main plant chiller'],
-  ['PO-2402','Trane Asia','Jakarta - Rooftop',d('2026-01-28'),1,1620000000,1620000000,5,110,300,'30/70 LC','Delivered','Backup unit'],
-  ['PO-2403','Daikin Applied','Surabaya - Basement',d('2026-02-09'),3,1240000000,3720000000,10,80,250,'50/50','In Transit','Phase 2 expansion'],
-  ['PO-2404','Carrier Indonesia','Surabaya - Basement',d('2026-02-22'),1,1850000000,1850000000,6,95,350,'30/70 LC','In Transit',null],
-  ['PO-2405','York Johnson Controls','Bandung - Plant',d('2026-03-05'),2,1410000000,2820000000,8,120,280,'Cash','Ordered','Spec per mech drawing'],
-  ['PO-2406','Daikin Applied','Bandung - Plant',d('2026-03-19'),1,1240000000,1240000000,10,80,250,'50/50','Ordered',null],
-  ['PO-2407','Trane Asia','Jakarta - Rooftop',d('2026-04-02'),2,1620000000,3240000000,4.5,110,300,'30/70 LC','Ordered','Client-nominated'],
+const HEAD = ['Order ID', 'Customer', 'City', 'Order Date', 'Qty',
+  'Unit Price (IDR)', 'Total Amount (IDR)', 'Discount (%)', 'Delivery Days',
+  'Weight (kg)', 'Payment Method', 'Status'];
+
+/* Two title rows and a blank one sit above the header, the way a real
+   exported report looks. The header lands on row 4. */
+const online = [
+  ['NUSANTARA SUPPLY CO.'],
+  ['Customer Orders - Online Store'],
+  [],
+  HEAD,
+  ['ORD-1001', 'Siti Rahayu',  'Jakarta',  d('2026-01-08'), 3,  450000, 1350000, 10, 3, 2.4, 'Bank Transfer', 'Delivered'],
+  ['ORD-1002', 'Budi Santoso', 'Bandung',  d('2026-01-15'), 1, 1250000, 1250000,  5, 4, 1.1, 'Credit Card',   'Delivered'],
+  ['ORD-1003', 'Dewi Lestari', 'Surabaya', d('2026-01-23'), 5,  320000, 1600000, 15, 5, 4.0, 'E-Wallet',      'Delivered'],
+  ['ORD-1004', 'Siti Rahayu',  'Jakarta',  d('2026-02-04'), 2,  450000,  900000, 10, 3, 1.6, 'Bank Transfer', 'Shipped'],
+  ['ORD-1005', 'Andi Pratama', 'Medan',    d('2026-02-19'), 4,  275000, 1100000,  0, 7, 3.2, 'COD',           'Shipped'],
+  ['ORD-1006', 'Dewi Lestari', 'Surabaya', d('2026-03-02'), 6,  320000, 1920000, 15, 5, 4.8, 'E-Wallet',      'Processing'],
+  ['ORD-1007', 'Rina Wijaya',  'Jakarta',  d('2026-03-18'), 2, 1250000, 2500000,  5, 4, 2.2, 'Credit Card',   'Processing'],
 ];
 
-const ahu = [
-  ['Air Handling Unit - Technical Evaluation & PO'], [],
-  ['PO No','Supplier','Area','PO Date','Qty (Unit)','Unit Price (IDR)','Total Price (IDR)','Discount (%)','Lead Time (Days)','Capacity (CMH)','Payment Term','Status'],
-  ['PO-2410','Fantech Indonesia','Tower A - Floor 3',d('2026-01-20'),6,142000000,852000000,12,45,12000,'Net 30','Delivered'],
-  ['PO-2411','Systemair','Tower A - Floor 7',d('2026-02-03'),4,168000000,672000000,9,60,15000,'Net 30','Delivered'],
-  ['PO-2412','Fantech Indonesia','Tower B - Floor 2',d('2026-02-17'),8,142000000,1136000000,12,45,12000,'Net 30','In Transit'],
-  ['PO-2413','Kruger Ventilation','Tower B - Floor 9',d('2026-03-10'),5,131000000,655000000,15,52,10500,'Net 45','Ordered'],
-  ['PO-2414','Systemair','Tower C - Rooftop',d('2026-03-24'),3,168000000,504000000,9,60,15000,'Net 30','Ordered'],
-  ['PO-2415','Fantech Indonesia','Tower C - Floor 5',d('2026-04-07'),7,142000000,994000000,12,45,12000,'Net 30','Ordered'],
+/* One title row, header on row 3. */
+const retail = [
+  ['Customer Orders - Retail Branch'],
+  [],
+  HEAD,
+  ['ORD-2001', 'Hendra Gunawan', 'Semarang',   d('2026-01-11'), 2, 680000, 1360000,  8, 1, 1.8, 'Cash',       'Delivered'],
+  ['ORD-2002', 'Maya Putri',     'Yogyakarta', d('2026-01-29'), 3, 540000, 1620000, 12, 1, 2.7, 'Debit Card', 'Delivered'],
+  ['ORD-2003', 'Hendra Gunawan', 'Semarang',   d('2026-02-13'), 1, 680000,  680000,  8, 2, 0.9, 'Cash',       'Delivered'],
+  ['ORD-2004', 'Tono Saputra',   'Solo',       d('2026-02-27'), 4, 395000, 1580000,  5, 2, 3.6, 'Debit Card', 'Shipped'],
+  ['ORD-2005', 'Maya Putri',     'Yogyakarta', d('2026-03-12'), 2, 540000, 1080000, 12, 1, 1.8, 'Cash',       'Shipped'],
+  ['ORD-2006', 'Lina Kusuma',    'Magelang',   d('2026-03-26'), 5, 310000, 1550000,  0, 3, 4.5, 'Debit Card', 'Processing'],
 ];
 
-const pumps = [
-  ['PO No','Vendor','Site Location','PO Date','Qty (Unit)','Total Price (IDR)','Discount (%)','Lead Time (Days)','Capacity (kW)','Payment Term','Status'],
-  ['PO-2420','Grundfos Indonesia','Jakarta - Basement',d('2026-01-15'),4,428000000,6,35,45,'Net 30','Delivered'],
-  ['PO-2421','Ebara Pumps','Surabaya - Pump Room',d('2026-02-11'),6,512000000,8,40,55,'Net 30','Delivered'],
-  ['PO-2422','Grundfos Indonesia','Bandung - Pump Room',d('2026-03-02'),3,321000000,6,35,45,'Net 30','In Transit'],
-  ['PO-2423','Wilo Asia','Jakarta - Basement',d('2026-03-28'),5,389000000,11,48,37,'Net 45','Ordered'],
+/* No title block at all, and no Unit Price or Weight columns - consolidation
+   has to line these up with the other sheets by column name. */
+const wholesale = [
+  ['Order ID', 'Customer', 'City', 'Order Date', 'Qty', 'Total Amount (IDR)',
+   'Discount (%)', 'Delivery Days', 'Payment Method', 'Status'],
+  ['ORD-3001', 'Toko Makmur Jaya',  'Bekasi',    d('2026-01-20'), 40,  9800000, 20, 6, 'Bank Transfer', 'Delivered'],
+  ['ORD-3002', 'CV Sumber Rejeki',  'Tangerang', d('2026-02-10'), 25,  6250000, 18, 5, 'Bank Transfer', 'Delivered'],
+  ['ORD-3003', 'Toko Makmur Jaya',  'Bekasi',    d('2026-03-05'), 60, 14400000, 22, 8, 'Bank Transfer', 'Shipped'],
+  ['ORD-3004', 'UD Berkah Abadi',   'Depok',     d('2026-03-30'), 30,  7500000, 18, 6, 'Bank Transfer', 'Processing'],
+];
+
+const notes = [
+  ['Notes'],
+  ['This tab is intentionally almost empty, to show that SheetSnap skips a sheet that has no data table instead of inventing numbers for it.'],
 ];
 
 const wb = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(chiller, { cellDates: true }), 'Chiller Units');
-XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ahu, { cellDates: true }), 'AHU Units');
-XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(pumps, { cellDates: true }), 'Pumps');
-XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Notes'],['This tab is intentionally almost empty, to show that SheetSnap skips sheets with no data table.']]), 'Notes');
+const add = (rows, name) =>
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows, { cellDates: true }), name);
 
-writeFileSync(new URL('../examples/sample-procurement.xlsx', import.meta.url),
+add(online, 'Online Store');
+add(retail, 'Retail Branch');
+add(wholesale, 'Wholesale');
+add(notes, 'Notes');
+
+writeFileSync(new URL('../examples/sample-sales-orders.xlsx', import.meta.url),
   XLSX.write(wb, { type: 'buffer', bookType: 'xlsx', cellDates: true }));
-console.log('wrote examples/sample-procurement.xlsx');
+console.log('wrote examples/sample-sales-orders.xlsx');

@@ -92,7 +92,7 @@
   /* ---------------------------------------------------------------
      1. Column-name vocabulary
         Used to guess what a column means. English + Indonesian,
-        because real procurement sheets mix both.
+        because real-world spreadsheets mix both.
      --------------------------------------------------------------- */
   var VOCAB = {
     unitRate: /(unit ?price|unit ?cost|unit ?rate|harga ?satuan|price ?per|cost ?per|rate ?per|per ?unit|\/ ?unit|\bupp\b)/i,

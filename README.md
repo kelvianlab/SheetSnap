@@ -94,9 +94,9 @@ For each sheet in your file, you get:
 
 **The 5 most important numbers** — and for each one, *exactly how it was calculated*:
 
-> **Total Amount (IDR) — 10,620,000**
-> `=SUM(G5:G11)`
-> SUM of column "Total Amount (IDR)" (G) · 7 values used, no empty cells
+> **Total Amount (IDR) — 16,260,000**
+> `=SUM(H5:H10)`
+> SUM of column "Total Amount (IDR)" (H) · 6 values used, no empty cells
 
 Nothing is a black box. Every number names its column, its formula, and how many
 rows went into it, so you can check it yourself in Excel in ten seconds.
@@ -108,8 +108,10 @@ sheets. One block per sheet, always complete.
 
 Always **exactly one A4 page**. This is the page you show your boss.
 
-- **Combined figures** across every sheet (columns with the same name are added
-  up together automatically).
+- **Combined figures** across every sheet. Columns are matched **by name**, so a
+  column that only appears in some sheets — one added halfway through the year,
+  say — is still totalled correctly, even if it sits in a different position on
+  each sheet.
 - **Contribution by sheet** — a table showing what each sheet brought to the total.
 - **A comparison chart** — which sheet is biggest, at a glance.
 - **An executive summary** written in sentences, including a note about data
@@ -155,8 +157,10 @@ Full technical detail: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 Want to try it before using your real data? Use the example file in this repo:
 [`examples/sample-sales-orders.xlsx`](examples/sample-sales-orders.xlsx) — a
-small business tracking customer orders across three sales channels, with a
-fourth notes tab that SheetSnap correctly skips.
+small business with one tab per month (January, February, March) plus a notes
+tab that SheetSnap correctly skips. It is messy on purpose: a title block above
+the header on some tabs but not others, and a `Discount (%)` column that only
+starts in February.
 
 ---
 

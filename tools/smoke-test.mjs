@@ -66,25 +66,32 @@ const body = await page.locator('#page1').innerText();
 ok('money column became the headline metric', /Total Amount \(IDR\)/.test(body));
 ok('header row below a title row was detected', /header detected on row 4/.test(body));
 ok('customer column answered "Who"', /Siti Rahayu/.test(body));
-ok('date column answered "When"', /2026-01-08 to 2026-03-18/.test(body));
+ok('date column answered "When"', /2026-01-06 to 2026-01-29/.test(body));
 ok('typed purpose answered "Why"', /Quarterly sales review/.test(body));
 ok('empty sheet was skipped, not crashed', /no data rows found/.test(body));
-/* The Online Store header sits on row 4, so its data really is rows 5-11
-   in Excel.
-   The printed formula must match the user's actual file, not a guess. */
-ok('printed formula matches the real Excel rows', /=SUM\(G5:G11\)/.test(body));
+/* Discount (%) only exists from February, and adding it shifted every later
+   column one letter across. Consolidation must still line the sheets up. */
+ok('a column that starts mid-quarter is matched by name, not position',
+   /avg discount \(%\)[\s\S]*?=AVERAGE\(I4:I9\)/i.test(body));
+ok('January falls back to a structural metric when numeric columns run out',
+   /records[\s\S]*?=COUNTA\(A5:A10\)/i.test(body));
+ok('channel column answered "How"', /Online \(3\)/.test(body));
+/* January's header sits on row 4 and Total Amount is column H, so its data
+   really is H5:H10 in Excel. The printed formula must match the user's actual
+   file, not a guess. */
+ok('printed formula matches the real Excel rows', /=SUM\(H5:H10\)/.test(body));
 ok('blank cells are reported honestly', /empty cell/.test(body));
 
 const p2 = await page.locator('#page2').innerText();
-/* Online Store   1,350,000 + 1,250,000 + 1,600,000 + 900,000
-                  + 1,100,000 + 1,920,000 + 2,500,000   = 10,620,000
-   Retail Branch  1,360,000 + 1,620,000 +   680,000 + 1,580,000
-                  + 1,080,000 + 1,550,000               =  7,870,000
-   Wholesale      9,800,000 + 6,250,000 + 14,400,000 + 7,500,000
-                                                        = 37,950,000 */
-const expected = 1350000 + 1250000 + 1600000 + 900000 + 1100000 + 1920000 + 2500000
-               + 1360000 + 1620000 + 680000 + 1580000 + 1080000 + 1550000
-               + 9800000 + 6250000 + 14400000 + 7500000;
+/* January   1,350,000 + 1,250,000 + 9,800,000 + 1,600,000
+             + 1,360,000 +   900,000                 = 16,260,000
+   February  1,620,000 + 6,250,000 + 1,100,000 +   680,000
+             + 1,920,000 + 1,580,000                 = 13,150,000
+   March    14,400,000 + 2,500,000 + 1,080,000 + 1,550,000
+             + 7,500,000                             = 27,030,000 */
+const expected = 1350000 + 1250000 + 9800000 + 1600000 + 1360000 + 900000
+               + 1620000 + 6250000 + 1100000 + 680000 + 1920000 + 1580000
+               + 14400000 + 2500000 + 1080000 + 1550000 + 7500000;
 ok('cross-sheet grand total is arithmetically correct',
    p2.includes(expected.toLocaleString('en-US')), `expected ${expected.toLocaleString('en-US')}`);
 ok('total record count correct (17)', /17 records in total/.test(p2));

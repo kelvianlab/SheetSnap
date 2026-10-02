@@ -47,10 +47,10 @@ ok('file card appears', await page.locator('#fileCard').isVisible());
 ok('Summarize button enabled after pick', await page.locator('#runBtn').isEnabled());
 
 await page.locator('#runBtn').click();
-await page.locator('#page2').waitFor({ state: 'visible', timeout: 15000 });
+await page.locator('.part2').first().waitFor({ state: 'visible', timeout: 15000 });
 
 ok('error box stayed hidden', await page.locator('#errBox').isHidden());
-ok('page 1 rendered', await page.locator('#page1').isVisible());
+ok('part 1 rendered', await page.locator('.part1').first().isVisible());
 
 /* Part 1 is one block per sheet, so its printed length depends on the workbook.
    Only part 2 is a single page. The app must never promise a fixed page count:
@@ -64,16 +64,16 @@ ok('part 1 states how many sheets it covers, so Print holds no surprise',
    /4 sheets here/i.test(visible));
 
 /* three data sheets + one empty sheet = four blocks */
-const blocks = await page.locator('#page1 .sheet').count();
+const blocks = await page.locator('.part1 .sheet').count();
 ok('one block per sheet (4)', blocks === 4, `got ${blocks}`);
 
-const w5h = await page.locator('#page1 .sheet').first().locator('.w5h .cell').count();
+const w5h = await page.locator('.part1 .sheet').first().locator('.w5h .cell').count();
 ok('first sheet has 6 x 5W1H cells', w5h === 6, `got ${w5h}`);
 
-const tiles = await page.locator('#page1 .sheet').first().locator('.tile').count();
+const tiles = await page.locator('.part1 .sheet').first().locator('.tile').count();
 ok('first sheet has 5 metric tiles', tiles === 5, `got ${tiles}`);
 
-const body = await page.locator('#page1').innerText();
+const body = (await page.locator('.part1').allInnerTexts()).join('\n');
 ok('money column became the headline metric', /Total Amount \(IDR\)/.test(body));
 ok('header row below a title row was detected', /header detected on row 4/.test(body));
 ok('customer column answered "Who"', /Siti Rahayu/.test(body));
@@ -93,7 +93,7 @@ ok('channel column answered "How"', /Online \(3\)/.test(body));
 ok('printed formula matches the real Excel rows', /=SUM\(H5:H10\)/.test(body));
 ok('blank cells are reported honestly', /empty cell/.test(body));
 
-const p2 = await page.locator('#page2').innerText();
+const p2 = (await page.locator('.part2').allInnerTexts()).join('\n');
 /* January   1,350,000 + 1,250,000 + 9,800,000 + 1,600,000
              + 1,360,000 +   900,000                 = 16,260,000
    February  1,620,000 + 6,250,000 + 1,100,000 +   680,000
@@ -107,8 +107,8 @@ ok('cross-sheet grand total is arithmetically correct',
    p2.includes(expected.toLocaleString('en-US')), `expected ${expected.toLocaleString('en-US')}`);
 ok('total record count correct (17)', /17 records in total/.test(p2));
 ok('empty sheet excluded from page 2', /1 empty sheet ignored/.test(p2));
-ok('comparison chart rendered', (await page.locator('#page2 .bar-row').count()) === 3);
-ok('executive summary written', (await page.locator('#page2 .exec p').count()) >= 4);
+ok('comparison chart rendered', (await page.locator('.part2 .bar-row').count()) === 3);
+ok('executive summary written', (await page.locator('.part2 .exec p').count()) >= 4);
 ok('largest contributor identified', /largest contributor/.test(p2));
 
 await page.screenshot({ path: shots + '02-report-light.png', fullPage: true });
@@ -116,16 +116,28 @@ await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'd
 await page.screenshot({ path: shots + '03-report-dark.png', fullPage: true });
 await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
 
-/* Print layout. Page 1 may run over several sheets (one block per sheet of
-   the workbook), but page 2 must always land on exactly one A4 sheet. */
-await page.emulateMedia({ media: 'print' });
-await page.pdf({ path: shots + 'report.pdf', format: 'A4', printBackground: true });
+/* Pagination. The screen is laid out as real A4 sheets, so the printed output
+   must come to exactly the same number of pages - no silent reflow, no blank
+   trailing page, nothing clipped. */
+const onScreenSheets = await page.locator('.a4').count();
+ok('report is laid out as discrete A4 sheets', onScreenSheets >= 2, `${onScreenSheets} sheet(s)`);
+ok('every sheet is numbered', (await page.locator('.a4-foot').count()) === onScreenSheets);
+ok('the last sheet says so',
+   (await page.locator('.a4-foot').last().innerText()).includes('of ' + onScreenSheets));
+ok('part 2 occupies exactly one sheet', (await page.locator('.part2').count()) === 1);
+ok('no sheet is empty',
+   (await page.locator('.a4-body').evaluateAll((n) => n.every((x) => x.childNodes.length > 0))));
 
-await page.locator('#page1').evaluate((n) => { n.style.display = 'none'; });
-const only2 = await page.pdf({ format: 'A4', printBackground: true });
-await page.locator('#page1').evaluate((n) => { n.style.display = ''; });
-const pageCount = (only2.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
-ok('page 2 fits exactly one A4 sheet', pageCount === 1, `rendered ${pageCount} sheet(s)`);
+/* Nothing may be cut off: every block must sit inside the sheet that holds it. */
+ok('no content is clipped by its sheet',
+   await page.locator('.a4').evaluateAll((sheets) =>
+     sheets.every((s) => s.scrollHeight <= s.clientHeight + 2)));
+
+await page.emulateMedia({ media: 'print' });
+const pdf = await page.pdf({ path: shots + 'report.pdf', format: 'A4', printBackground: true });
+const pdfPages = (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+ok('printed page count matches the sheets shown on screen',
+   pdfPages === onScreenSheets, `${pdfPages} printed vs ${onScreenSheets} on screen`);
 await page.emulateMedia({ media: 'screen' });
 
 /* Excel export must actually produce a file. */
@@ -145,7 +157,8 @@ writeFileSync(csv, 'a,b,c\n,,\n1,,x\n');
 await page.locator('#fileInput').setInputFiles(csv);
 await page.locator('#runBtn').click();
 await page.waitForTimeout(1200);
-const survived = (await page.locator('#page2').isVisible()) || !(await page.locator('#errBox').isHidden());
+const survived = (await page.locator('.part2').first().isVisible().catch(() => false)) ||
+                 !(await page.locator('#errBox').isHidden());
 ok('awkward CSV handled without crashing', survived);
 
 /* ---------------- security and reliability checks ---------------------- */
@@ -172,7 +185,7 @@ ok('markup hidden inside a file never executes', await page.evaluate(() => windo
 /* The parser strips the tags and hands us plain cell values, so the file is
    summarised as ordinary data rather than being rendered as markup. */
 ok('disguised file is summarised as plain data, not rendered as markup',
-   await page.locator('#page2').isVisible());
+   await page.locator('.part2').first().isVisible());
 ok('no element was injected from file content',
    (await page.locator('#report img, #report script, #errBox img, #errBox script').count()) === 0);
 
@@ -181,12 +194,12 @@ await page.locator('#againBtn').click().catch(() => {});
 await page.locator('#drop').waitFor({ state: 'visible' });
 await page.locator('#fileInput').setInputFiles(xlsx);
 await page.locator('#runBtn').click();
-await page.locator('#page2').waitFor({ state: 'visible', timeout: 15000 });
+await page.locator('.part2').first().waitFor({ state: 'visible', timeout: 15000 });
 const second = await page.locator('#page2').innerText();
 ok('second run produces an identical consolidated total (idempotent)',
    second.includes(expected.toLocaleString('en-US')));
 ok('no duplicated report blocks after a re-run',
-   (await page.locator('#page1 .sheet').count()) === 4);
+   (await page.locator('.part1 .sheet').count()) === 4);
 
 ok('no uncaught JS errors', errors.length === 0, errors.join(' | '));
 

@@ -151,54 +151,74 @@ svg{width:1.15em;height:1.15em;display:block;flex:none}
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
 .toolhint{color:var(--text-muted);font-size:13px}
 
-/* ---------- report pages ---------- */
-.report{display:flex;flex-direction:column;gap:26px}
-.page{
-  background:var(--surface-1);border:1px solid var(--border);
-  border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;
+/* ---------- report: real A4 sheets ---------- */
+/* The screen shows the printed object. One .a4 element is one piece of paper:
+   210 x 297 mm with a 12 mm margin, scaled down to fit a narrow window.       */
+.report{
+  --a4-scale:1;
+  display:flex;flex-direction:column;align-items:center;gap:22px;
 }
+.a4{
+  width:210mm;height:297mm;padding:12mm;
+  box-sizing:border-box;flex:none;
+  background:var(--surface-1);border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;
+  transform:scale(var(--a4-scale));transform-origin:top center;
+  /* keep the flow tight when the sheet is scaled down */
+  margin-bottom:calc((var(--a4-scale) - 1) * 297mm);
+}
+/* Fixed height, visible overflow: content can exceed it (which is how the
+   paginator detects a full page) and is never cut off if it somehow does. */
+.a4-body{flex:1 1 auto;min-height:0;overflow:visible}
+.a4-foot{
+  flex:none;display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:6mm;padding-top:2.5mm;border-top:1px solid var(--border);
+  font-size:8.5pt;line-height:1.4;min-height:1.4em;color:var(--text-muted);
+}
+
 .page-label{
-  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--series-1);background:var(--series-1-soft);border-radius:999px;padding:3px 10px;margin-bottom:12px;
+  display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--series-1);background:var(--series-1-soft);border-radius:999px;padding:2px 9px;margin-bottom:8px;
 }
 .page-title{font-size:21px;letter-spacing:-.015em;margin:0 0 4px}
-.page-note{color:var(--text-secondary);font-size:13.5px;margin:0 0 20px}
-.rhead{border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px}
-.rhead h2{font-size:22px;margin:0 0 4px;letter-spacing:-.015em}
+.page-note{color:var(--text-secondary);font-size:12.5px;margin:0 0 12px;line-height:1.45}
+.rhead{border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px}
+.rhead h2{font-size:20px;margin:0 0 3px;letter-spacing:-.015em}
 .rhead .sub{color:var(--text-secondary);font-size:13.5px}
 
 /* sheet block */
-.sheet{border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;background:var(--surface-1)}
+.sheet{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;background:var(--surface-1)}
 .sheet:last-child{margin-bottom:0}
-.sheet-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.sheet-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .sheet-n{font-size:11px;font-weight:700;color:#fff;background:var(--series-1);border-radius:5px;padding:2px 7px}
 .sheet-name{font-size:17px;font-weight:700;letter-spacing:-.01em}
 .sheet-size{font-size:12.5px;color:var(--text-muted)}
 
 .sec-h{
   font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--text-muted);margin:0 0 9px;
+  color:var(--text-muted);margin:0 0 7px;
 }
 
 /* 5W1H */
 .w5h{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
-.w5h div.cell{background:var(--surface-1);padding:9px 12px}
+.w5h div.cell{background:var(--surface-1);padding:7px 10px}
 .w5h .k{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--series-1);text-transform:uppercase}
 .w5h .v{font-size:13.5px;color:var(--text-primary);margin-top:1px}
 .w5h .src{font-size:11.5px;color:var(--text-muted);margin-top:2px;font-family:var(--mono)}
 
 /* metric tiles */
-.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
-.tile{border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;background:var(--surface-1);min-width:0}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.tile{border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 10px;background:var(--surface-1);min-width:0}
 .tile-k{font-size:11px;font-weight:650;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tile-v{font-size:21px;font-weight:700;letter-spacing:-.02em;margin:3px 0 1px;font-variant-numeric:tabular-nums;
+.tile-v{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:2px 0 1px;font-variant-numeric:tabular-nums;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tile-f{font-size:11px;color:var(--text-muted);font-family:var(--mono);overflow-wrap:anywhere}
 
 /* tables */
 table.t{width:100%;border-collapse:collapse;font-size:13px}
-table.t th,table.t td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+table.t th,table.t td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
 table.t thead th{
   font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);
   border-bottom:1px solid var(--border-strong);font-weight:700;
@@ -223,6 +243,25 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
 
 .notice{font-size:12.5px;color:var(--text-muted);margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 
+/* Part 2 carries the most per square centimetre, so it is set tighter. These
+   steps are what keep the whole-file summary on a single sheet;
+   tools/smoke-test.mjs asserts that, so do not loosen them without re-running it. */
+.part2{font-size:11.5px;line-height:1.4}
+.part2 .rhead{padding-bottom:10px;margin-bottom:12px}
+.part2 .rhead h2{font-size:18px;margin-bottom:2px}
+.part2 .sec-h{margin:0 0 5px}
+.part2 .tiles{gap:6px;margin-bottom:10px}
+.part2 .tile{padding:6px 8px}
+.part2 .tile-v{font-size:15px;margin:1px 0 0}
+.part2 .tile-f,.part2 .tile-k{font-size:9.5px}
+.part2 table.t{font-size:11px}
+.part2 table.t th,.part2 table.t td{padding:3px 6px}
+.part2 .bar-row{padding:2px 0}
+.part2 .bar-track{height:11px}
+.part2 .exec{padding:9px 11px;margin-top:11px}
+.part2 .exec p{font-size:11px;line-height:1.45;margin-bottom:4px}
+.part2 .notice{font-size:9.5px;margin-top:9px;padding-top:7px}
+
 /* ---------- responsive ---------- */
 @media (max-width:760px){
   .tiles{grid-template-columns:repeat(2,1fr)}
@@ -236,7 +275,9 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
 }
 
 /* ---------- print: A4 ---------- */
-@page{size:A4 portrait;margin:12mm}
+/* The sheets already carry their own 12 mm margin, so the page box has none -
+   one .a4 element then maps exactly onto one sheet of paper. */
+@page{size:A4 portrait;margin:0}
 @media print{
   :root,:root[data-theme="dark"]{
     color-scheme:light;
@@ -251,31 +292,8 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
   .report{gap:0}
   .page{border:none;box-shadow:none;border-radius:0;padding:0;break-after:page}
   .page:last-child{break-after:auto}
-  /* Page 2 is locked to exactly one A4 sheet. These tighter steps are what
-     keep the whole-file summary on a single printed page; tools/smoke-test.mjs
-     asserts the page count, so do not loosen them without re-running it. */
-  #page2{break-before:page;break-inside:avoid;font-size:8.6pt;line-height:1.38}
-  #page2 .rhead{padding-bottom:7px;margin-bottom:9px}
-  #page2 .rhead h2{font-size:13pt;margin-bottom:2px}
-  #page2 .sec-h{margin:0 0 4px}
-  #page2 .tiles{gap:5px;margin-bottom:8px}
-  #page2 .tile{padding:5px 7px}
-  #page2 .tile-v{font-size:11pt;margin:1px 0 0}
-  #page2 .tile-f,#page2 .tile-k{font-size:7pt}
-  #page2 table.t{font-size:8pt}
-  #page2 table.t th,#page2 table.t td{padding:2px 5px}
-  #page2 .bar-row{padding:1px 0}
-  #page2 .bar-track{height:9px}
-  #page2 .exec{padding:7px 9px;margin-top:9px}
-  #page2 .exec p{font-size:8pt;line-height:1.4;margin-bottom:3px}
-  #page2 .notice{font-size:7pt;margin-top:7px;padding-top:6px}
-  .sheet{break-inside:avoid;page-break-inside:avoid}
-  .tile,.exec,table.t tr,.bar-row{break-inside:avoid}
-  body{font-size:10.5pt}
-  .tile-v{font-size:15pt}
-  .page-title{font-size:15pt}
-  .rhead h2{font-size:16pt}
-  table.t th,table.t td{padding:4px 6px}
+  /* The paginator already placed everything; the browser must not re-break it. */
+  .a4-body,.sheet,.tile,.exec,table.t,.bar-row{break-inside:avoid}
 }
 
 </style>
@@ -973,9 +991,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return t;
   }
 
-  function renderPage1(wrapEl, model) {
-    var page = el('section', 'page');
-    page.id = 'page1';
+  /* Returns the flow items for part 1. The paginator decides which A4 sheet
+     each one lands on; nothing here knows about pages. */
+  function buildPart1(model) {
+    var items = [];
+    var page = { appendChild: function (n) { items.push(n); } };
 
     var head = el('div', 'rhead');
     head.appendChild(el('span', 'page-label', 'Part 1 of 2 - per-sheet breakdown'));
@@ -1000,7 +1020,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       if (s.empty) {
         sh.appendChild(el('span', 'sheet-size', 'no data rows found - skipped'));
         box.appendChild(sh);
-        wrapEl.appendChild(box);
         page.appendChild(box);
         return;
       }
@@ -1036,13 +1055,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       page.appendChild(box);
     });
 
-    wrapEl.appendChild(page);
+    return items;
   }
 
-  function renderPage2(wrapEl, model) {
+  function buildPart2(model) {
     var c = model.consol;
-    var page = el('section', 'page');
-    page.id = 'page2';
+    var items = [];
+    var page = { appendChild: function (n) { items.push(n); } };
 
     var head = el('div', 'rhead');
     head.appendChild(el('span', 'page-label', 'Part 2 of 2 - whole-file summary, one A4 page'));
@@ -1178,7 +1197,107 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       'Every number on both pages is a plain SUM, AVERAGE, COUNT, MIN or MAX over a single column of your file - the formula is printed beside each one so you can check it in Excel. SheetSnap never changes your original file. Generated ' +
       model.meta.generated + ' by SheetSnap.'));
 
-    wrapEl.appendChild(page);
+    return items;
+  }
+
+
+  /* ---------------------------------------------------------------
+     4b. A4 pagination
+
+     What you see on screen is what comes out of the printer: the report
+     is laid out onto real A4 sheets, and a block that would not fit on
+     the current sheet starts the next one. Nothing is ever clipped - a
+     single block taller than a sheet grows that sheet instead of losing
+     its bottom half, which is the one failure a summary must not have.
+     --------------------------------------------------------------- */
+
+  function paginate(host, groups) {
+    var sheets = [];
+
+    /* Overflow is read off the live sheet rather than a measured constant:
+       .a4 has a fixed height and .a4-body fills what is left after the page
+       number, so the body's own clientHeight IS the budget. Comparing against
+       a separately measured probe instead cost an off-by-one from sub-pixel
+       rounding, which put every single block on a page of its own. */
+    function overflows(body) {
+      return body.scrollHeight > body.clientHeight + 1;
+    }
+
+    /* The class goes on at creation, never afterwards: part 2 is typeset
+       tighter than part 1, so a sheet measured before its class is applied is
+       measured at the wrong font size and breaks in the wrong place. */
+    function newSheet(cls) {
+      var sheet = el('section', 'a4 ' + cls);
+      var body = el('div', 'a4-body');
+      sheet.appendChild(body);
+      /* The page number is part of the sheet from the moment it exists. Adding
+         it afterwards would shrink the body under content already measured
+         against the taller box, and the last block would spill off the page. */
+      var foot = el('div', 'a4-foot');
+      foot.appendChild(el('span', null, 'SheetSnap'));
+      foot.appendChild(el('span', 'a4-num', ''));
+      sheet.appendChild(foot);
+      host.appendChild(sheet);
+      sheets.push(sheet);
+      return body;
+    }
+
+    groups.forEach(function (group) {
+      var first = sheets.length;
+      var body = newSheet(group.cls);   /* each part starts on a fresh sheet */
+
+      group.items.forEach(function (item) {
+        body.appendChild(item);
+        if (overflows(body)) {
+          if (body.childNodes.length === 1) {
+            /* Taller than a whole sheet on its own. Leave it where it is -
+               the sheet stretches - and start the next one after it. */
+            body = newSheet(group.cls);
+            return;
+          }
+          body.removeChild(item);
+          body = newSheet(group.cls);
+          body.appendChild(item);
+        }
+      });
+
+      /* A part that ended exactly on a boundary can leave an empty sheet. */
+      var last = sheets[sheets.length - 1];
+      if (!last.firstChild.childNodes.length) {
+        host.removeChild(last);
+        sheets.pop();
+      }
+
+      if (sheets[first]) sheets[first].id = group.id;
+    });
+
+    /* Only now is the total known, so fill in the numbers that were reserved. */
+    sheets.forEach(function (sheet, i) {
+      sheet.querySelector('.a4-num').textContent = 'Page ' + (i + 1) + ' of ' + sheets.length;
+    });
+
+    return sheets;
+  }
+
+  /* Screen only: shrink the sheet to fit a narrow window, so a phone shows a
+     whole A4 page rather than a horizontally scrolling slice of one. */
+  function fitToViewport(host) {
+    var sheet = host.querySelector('.a4');
+    if (!sheet) return;
+    var natural = sheet.offsetWidth;
+    if (!natural) return;
+    var available = host.clientWidth;
+    var scale = Math.min(1, available / natural);
+    host.style.setProperty('--a4-scale', scale);
+  }
+
+  function renderReport(host, model) {
+    host.textContent = '';
+    paginate(host, [
+      { id: 'page1', cls: 'part1', items: buildPart1(model) },
+      { id: 'page2', cls: 'part2', items: buildPart2(model) }
+    ]);
+    fitToViewport(host);
   }
 
   /* ---------------------------------------------------------------
@@ -1309,13 +1428,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         var model = { meta: meta, sheets: sheets, consol: consolidate(sheets) };
         state.model = model;
 
-        var out = $('report');
-        out.innerHTML = '';
-        renderPage1(out, model);
-        renderPage2(out, model);
-
+        /* The report screen has to be visible BEFORE rendering: the paginator
+           measures real element heights, and a hidden subtree measures zero,
+           which would silently pour the whole report onto one sheet. */
         $('screenStart').hidden = true;
         $('screenReport').hidden = false;
+        renderReport($('report'), model);
         window.scrollTo(0, 0);
       } catch (err) {
         btn.disabled = false;
@@ -1380,6 +1498,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     var next = dark ? 'light' : 'dark';
     applyTheme(next);
     try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+  });
+
+  window.addEventListener('resize', function () {
+    if (!$('screenReport').hidden) fitToViewport($('report'));
   });
 
   /* expose for the test harness */

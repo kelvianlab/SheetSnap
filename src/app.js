@@ -564,9 +564,11 @@
     return t;
   }
 
-  function renderPage1(wrapEl, model) {
-    var page = el('section', 'page');
-    page.id = 'page1';
+  /* Returns the flow items for part 1. The paginator decides which A4 sheet
+     each one lands on; nothing here knows about pages. */
+  function buildPart1(model) {
+    var items = [];
+    var page = { appendChild: function (n) { items.push(n); } };
 
     var head = el('div', 'rhead');
     head.appendChild(el('span', 'page-label', 'Part 1 of 2 - per-sheet breakdown'));
@@ -591,7 +593,6 @@
       if (s.empty) {
         sh.appendChild(el('span', 'sheet-size', 'no data rows found - skipped'));
         box.appendChild(sh);
-        wrapEl.appendChild(box);
         page.appendChild(box);
         return;
       }
@@ -627,13 +628,13 @@
       page.appendChild(box);
     });
 
-    wrapEl.appendChild(page);
+    return items;
   }
 
-  function renderPage2(wrapEl, model) {
+  function buildPart2(model) {
     var c = model.consol;
-    var page = el('section', 'page');
-    page.id = 'page2';
+    var items = [];
+    var page = { appendChild: function (n) { items.push(n); } };
 
     var head = el('div', 'rhead');
     head.appendChild(el('span', 'page-label', 'Part 2 of 2 - whole-file summary, one A4 page'));
@@ -769,7 +770,107 @@
       'Every number on both pages is a plain SUM, AVERAGE, COUNT, MIN or MAX over a single column of your file - the formula is printed beside each one so you can check it in Excel. SheetSnap never changes your original file. Generated ' +
       model.meta.generated + ' by SheetSnap.'));
 
-    wrapEl.appendChild(page);
+    return items;
+  }
+
+
+  /* ---------------------------------------------------------------
+     4b. A4 pagination
+
+     What you see on screen is what comes out of the printer: the report
+     is laid out onto real A4 sheets, and a block that would not fit on
+     the current sheet starts the next one. Nothing is ever clipped - a
+     single block taller than a sheet grows that sheet instead of losing
+     its bottom half, which is the one failure a summary must not have.
+     --------------------------------------------------------------- */
+
+  function paginate(host, groups) {
+    var sheets = [];
+
+    /* Overflow is read off the live sheet rather than a measured constant:
+       .a4 has a fixed height and .a4-body fills what is left after the page
+       number, so the body's own clientHeight IS the budget. Comparing against
+       a separately measured probe instead cost an off-by-one from sub-pixel
+       rounding, which put every single block on a page of its own. */
+    function overflows(body) {
+      return body.scrollHeight > body.clientHeight + 1;
+    }
+
+    /* The class goes on at creation, never afterwards: part 2 is typeset
+       tighter than part 1, so a sheet measured before its class is applied is
+       measured at the wrong font size and breaks in the wrong place. */
+    function newSheet(cls) {
+      var sheet = el('section', 'a4 ' + cls);
+      var body = el('div', 'a4-body');
+      sheet.appendChild(body);
+      /* The page number is part of the sheet from the moment it exists. Adding
+         it afterwards would shrink the body under content already measured
+         against the taller box, and the last block would spill off the page. */
+      var foot = el('div', 'a4-foot');
+      foot.appendChild(el('span', null, 'SheetSnap'));
+      foot.appendChild(el('span', 'a4-num', ''));
+      sheet.appendChild(foot);
+      host.appendChild(sheet);
+      sheets.push(sheet);
+      return body;
+    }
+
+    groups.forEach(function (group) {
+      var first = sheets.length;
+      var body = newSheet(group.cls);   /* each part starts on a fresh sheet */
+
+      group.items.forEach(function (item) {
+        body.appendChild(item);
+        if (overflows(body)) {
+          if (body.childNodes.length === 1) {
+            /* Taller than a whole sheet on its own. Leave it where it is -
+               the sheet stretches - and start the next one after it. */
+            body = newSheet(group.cls);
+            return;
+          }
+          body.removeChild(item);
+          body = newSheet(group.cls);
+          body.appendChild(item);
+        }
+      });
+
+      /* A part that ended exactly on a boundary can leave an empty sheet. */
+      var last = sheets[sheets.length - 1];
+      if (!last.firstChild.childNodes.length) {
+        host.removeChild(last);
+        sheets.pop();
+      }
+
+      if (sheets[first]) sheets[first].id = group.id;
+    });
+
+    /* Only now is the total known, so fill in the numbers that were reserved. */
+    sheets.forEach(function (sheet, i) {
+      sheet.querySelector('.a4-num').textContent = 'Page ' + (i + 1) + ' of ' + sheets.length;
+    });
+
+    return sheets;
+  }
+
+  /* Screen only: shrink the sheet to fit a narrow window, so a phone shows a
+     whole A4 page rather than a horizontally scrolling slice of one. */
+  function fitToViewport(host) {
+    var sheet = host.querySelector('.a4');
+    if (!sheet) return;
+    var natural = sheet.offsetWidth;
+    if (!natural) return;
+    var available = host.clientWidth;
+    var scale = Math.min(1, available / natural);
+    host.style.setProperty('--a4-scale', scale);
+  }
+
+  function renderReport(host, model) {
+    host.textContent = '';
+    paginate(host, [
+      { id: 'page1', cls: 'part1', items: buildPart1(model) },
+      { id: 'page2', cls: 'part2', items: buildPart2(model) }
+    ]);
+    fitToViewport(host);
   }
 
   /* ---------------------------------------------------------------
@@ -900,13 +1001,12 @@
         var model = { meta: meta, sheets: sheets, consol: consolidate(sheets) };
         state.model = model;
 
-        var out = $('report');
-        out.innerHTML = '';
-        renderPage1(out, model);
-        renderPage2(out, model);
-
+        /* The report screen has to be visible BEFORE rendering: the paginator
+           measures real element heights, and a hidden subtree measures zero,
+           which would silently pour the whole report onto one sheet. */
         $('screenStart').hidden = true;
         $('screenReport').hidden = false;
+        renderReport($('report'), model);
         window.scrollTo(0, 0);
       } catch (err) {
         btn.disabled = false;
@@ -971,6 +1071,10 @@
     var next = dark ? 'light' : 'dark';
     applyTheme(next);
     try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+  });
+
+  window.addEventListener('resize', function () {
+    if (!$('screenReport').hidden) fitToViewport($('report'));
   });
 
   /* expose for the test harness */

@@ -10,6 +10,17 @@ a twelve-sheet workbook runs to several pages. Only part 2 is guaranteed to fit
 a single A4 page, and the test suite enforces that. Any wording that promises a
 two-page printout is a bug.
 
+**The screen is the printed object.** `paginate()` in `src/app.js` lays the
+report onto real A4 sheets and the test suite asserts that the PDF comes to the
+same page count. Three ordering rules make that work, and all three were bugs
+first: a sheet's part class goes on at creation, because part 2 is typeset
+tighter and measuring it unstyled breaks in the wrong place; the page-number
+footer is built with the sheet, because adding it afterwards shrinks a body that
+has already been filled; and the report must be visible before rendering,
+because a hidden subtree measures zero and pours everything onto one sheet.
+Overflow is read from the live element (`scrollHeight > clientHeight`), never
+from a separately measured constant.
+
 ## The product promise
 
 **Plug and play: one file, no install, no account, no network.** Any change that

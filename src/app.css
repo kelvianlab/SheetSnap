@@ -143,54 +143,74 @@ svg{width:1.15em;height:1.15em;display:block;flex:none}
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
 .toolhint{color:var(--text-muted);font-size:13px}
 
-/* ---------- report pages ---------- */
-.report{display:flex;flex-direction:column;gap:26px}
-.page{
-  background:var(--surface-1);border:1px solid var(--border);
-  border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;
+/* ---------- report: real A4 sheets ---------- */
+/* The screen shows the printed object. One .a4 element is one piece of paper:
+   210 x 297 mm with a 12 mm margin, scaled down to fit a narrow window.       */
+.report{
+  --a4-scale:1;
+  display:flex;flex-direction:column;align-items:center;gap:22px;
 }
+.a4{
+  width:210mm;height:297mm;padding:12mm;
+  box-sizing:border-box;flex:none;
+  background:var(--surface-1);border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;
+  transform:scale(var(--a4-scale));transform-origin:top center;
+  /* keep the flow tight when the sheet is scaled down */
+  margin-bottom:calc((var(--a4-scale) - 1) * 297mm);
+}
+/* Fixed height, visible overflow: content can exceed it (which is how the
+   paginator detects a full page) and is never cut off if it somehow does. */
+.a4-body{flex:1 1 auto;min-height:0;overflow:visible}
+.a4-foot{
+  flex:none;display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:6mm;padding-top:2.5mm;border-top:1px solid var(--border);
+  font-size:8.5pt;line-height:1.4;min-height:1.4em;color:var(--text-muted);
+}
+
 .page-label{
-  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--series-1);background:var(--series-1-soft);border-radius:999px;padding:3px 10px;margin-bottom:12px;
+  display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--series-1);background:var(--series-1-soft);border-radius:999px;padding:2px 9px;margin-bottom:8px;
 }
 .page-title{font-size:21px;letter-spacing:-.015em;margin:0 0 4px}
-.page-note{color:var(--text-secondary);font-size:13.5px;margin:0 0 20px}
-.rhead{border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px}
-.rhead h2{font-size:22px;margin:0 0 4px;letter-spacing:-.015em}
+.page-note{color:var(--text-secondary);font-size:12.5px;margin:0 0 12px;line-height:1.45}
+.rhead{border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px}
+.rhead h2{font-size:20px;margin:0 0 3px;letter-spacing:-.015em}
 .rhead .sub{color:var(--text-secondary);font-size:13.5px}
 
 /* sheet block */
-.sheet{border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;background:var(--surface-1)}
+.sheet{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;background:var(--surface-1)}
 .sheet:last-child{margin-bottom:0}
-.sheet-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.sheet-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .sheet-n{font-size:11px;font-weight:700;color:#fff;background:var(--series-1);border-radius:5px;padding:2px 7px}
 .sheet-name{font-size:17px;font-weight:700;letter-spacing:-.01em}
 .sheet-size{font-size:12.5px;color:var(--text-muted)}
 
 .sec-h{
   font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--text-muted);margin:0 0 9px;
+  color:var(--text-muted);margin:0 0 7px;
 }
 
 /* 5W1H */
 .w5h{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
-.w5h div.cell{background:var(--surface-1);padding:9px 12px}
+.w5h div.cell{background:var(--surface-1);padding:7px 10px}
 .w5h .k{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--series-1);text-transform:uppercase}
 .w5h .v{font-size:13.5px;color:var(--text-primary);margin-top:1px}
 .w5h .src{font-size:11.5px;color:var(--text-muted);margin-top:2px;font-family:var(--mono)}
 
 /* metric tiles */
-.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
-.tile{border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;background:var(--surface-1);min-width:0}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.tile{border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 10px;background:var(--surface-1);min-width:0}
 .tile-k{font-size:11px;font-weight:650;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tile-v{font-size:21px;font-weight:700;letter-spacing:-.02em;margin:3px 0 1px;font-variant-numeric:tabular-nums;
+.tile-v{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:2px 0 1px;font-variant-numeric:tabular-nums;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tile-f{font-size:11px;color:var(--text-muted);font-family:var(--mono);overflow-wrap:anywhere}
 
 /* tables */
 table.t{width:100%;border-collapse:collapse;font-size:13px}
-table.t th,table.t td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+table.t th,table.t td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
 table.t thead th{
   font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);
   border-bottom:1px solid var(--border-strong);font-weight:700;
@@ -215,6 +235,25 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
 
 .notice{font-size:12.5px;color:var(--text-muted);margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 
+/* Part 2 carries the most per square centimetre, so it is set tighter. These
+   steps are what keep the whole-file summary on a single sheet;
+   tools/smoke-test.mjs asserts that, so do not loosen them without re-running it. */
+.part2{font-size:11.5px;line-height:1.4}
+.part2 .rhead{padding-bottom:10px;margin-bottom:12px}
+.part2 .rhead h2{font-size:18px;margin-bottom:2px}
+.part2 .sec-h{margin:0 0 5px}
+.part2 .tiles{gap:6px;margin-bottom:10px}
+.part2 .tile{padding:6px 8px}
+.part2 .tile-v{font-size:15px;margin:1px 0 0}
+.part2 .tile-f,.part2 .tile-k{font-size:9.5px}
+.part2 table.t{font-size:11px}
+.part2 table.t th,.part2 table.t td{padding:3px 6px}
+.part2 .bar-row{padding:2px 0}
+.part2 .bar-track{height:11px}
+.part2 .exec{padding:9px 11px;margin-top:11px}
+.part2 .exec p{font-size:11px;line-height:1.45;margin-bottom:4px}
+.part2 .notice{font-size:9.5px;margin-top:9px;padding-top:7px}
+
 /* ---------- responsive ---------- */
 @media (max-width:760px){
   .tiles{grid-template-columns:repeat(2,1fr)}
@@ -228,7 +267,9 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
 }
 
 /* ---------- print: A4 ---------- */
-@page{size:A4 portrait;margin:12mm}
+/* The sheets already carry their own 12 mm margin, so the page box has none -
+   one .a4 element then maps exactly onto one sheet of paper. */
+@page{size:A4 portrait;margin:0}
 @media print{
   :root,:root[data-theme="dark"]{
     color-scheme:light;
@@ -243,29 +284,6 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
   .report{gap:0}
   .page{border:none;box-shadow:none;border-radius:0;padding:0;break-after:page}
   .page:last-child{break-after:auto}
-  /* Page 2 is locked to exactly one A4 sheet. These tighter steps are what
-     keep the whole-file summary on a single printed page; tools/smoke-test.mjs
-     asserts the page count, so do not loosen them without re-running it. */
-  #page2{break-before:page;break-inside:avoid;font-size:8.6pt;line-height:1.38}
-  #page2 .rhead{padding-bottom:7px;margin-bottom:9px}
-  #page2 .rhead h2{font-size:13pt;margin-bottom:2px}
-  #page2 .sec-h{margin:0 0 4px}
-  #page2 .tiles{gap:5px;margin-bottom:8px}
-  #page2 .tile{padding:5px 7px}
-  #page2 .tile-v{font-size:11pt;margin:1px 0 0}
-  #page2 .tile-f,#page2 .tile-k{font-size:7pt}
-  #page2 table.t{font-size:8pt}
-  #page2 table.t th,#page2 table.t td{padding:2px 5px}
-  #page2 .bar-row{padding:1px 0}
-  #page2 .bar-track{height:9px}
-  #page2 .exec{padding:7px 9px;margin-top:9px}
-  #page2 .exec p{font-size:8pt;line-height:1.4;margin-bottom:3px}
-  #page2 .notice{font-size:7pt;margin-top:7px;padding-top:6px}
-  .sheet{break-inside:avoid;page-break-inside:avoid}
-  .tile,.exec,table.t tr,.bar-row{break-inside:avoid}
-  body{font-size:10.5pt}
-  .tile-v{font-size:15pt}
-  .page-title{font-size:15pt}
-  .rhead h2{font-size:16pt}
-  table.t th,table.t td{padding:4px 6px}
+  /* The paginator already placed everything; the browser must not re-break it. */
+  .a4-body,.sheet,.tile,.exec,table.t,.bar-row{break-inside:avoid}
 }

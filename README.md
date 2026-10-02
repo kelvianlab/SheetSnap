@@ -68,7 +68,7 @@ Then you can:
 
 | Button | What it does |
 |---|---|
-| **Save as PDF / Print** | Opens your normal print window. Choose **A4** and **Save as PDF**. |
+| **Save as PDF / Print** | Opens your normal print window. Choose **A4** and **Save as PDF**. What prints is page-for-page what you saw. |
 | **Download as Excel** | Saves the summary as a new `.xlsx` file, so you can keep working on it. |
 | **Start over** | Clears everything and lets you summarize a different file. |
 
@@ -76,9 +76,15 @@ Then you can:
 
 ## What the report looks like
 
-The report is always **2 parts**. Only part 2 is a single page — part 1 is one
-block per sheet, so a workbook with twelve sheets prints a longer part 1. That is
-deliberate: nothing is squeezed out to hit a page count.
+**What you see on screen is the printed object.** The report is laid out on real
+A4 sheets, numbered *Page 1 of 4* and so on. When a block will not fit on the
+sheet it is on, it starts the next one — exactly as it will come out of your
+printer. There is no long scrolling page that turns into a surprise when you
+press Print.
+
+The report is always **2 parts**. Only part 2 is a single sheet — part 1 is one
+block per spreadsheet tab, so a workbook with twelve tabs makes a longer part 1.
+That is deliberate: nothing is squeezed out to hit a page count.
 
 ### Part 1 — one block for every sheet
 
@@ -104,10 +110,9 @@ For each sheet in your file, you get:
 Nothing is a black box. Every number names its column, its formula, and how many
 rows went into it, so you can check it yourself in Excel in ten seconds.
 
-**How many printed pages is this?** As many as your workbook needs — one block
-per sheet, never truncated. Three sheets fit comfortably on one or two pages;
-twelve sheets will take more. The report itself tells you how many sheets it
-found, so there are no surprises when you press Print.
+**How many pages is this?** As many as your workbook needs — never truncated.
+You do not have to guess: the sheets are numbered on screen before you print,
+and the first one tells you how many spreadsheet tabs it is about to cover.
 
 ### Part 2 — the whole file in one page
 

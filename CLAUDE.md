@@ -45,8 +45,11 @@ source column, the Excel formula and the row count beside each figure. A new
 metric that cannot explain itself does not belong in the report.
 
 **No personal data in this repository, ever.** It is public. Author commits as
-`kelvianlab <kelvianlab@users.noreply.github.com>` — never a personal name or
-personal email, and never guess a person's name from an email address. Never
+`kelvianlab <298314713+kelvianlab@users.noreply.github.com>` — never a personal
+name or personal email, and never guess a person's name from an email address.
+The numeric prefix is load-bearing: GitHub only links a noreply address to the
+account when it carries the account id, so the shorter `kelvianlab@users.
+noreply.github.com` form leaves commits attributed to nobody. Never
 commit a path from someone's own machine; use repository-relative paths. Check
 screenshots before adding them: no names, no file paths, no device or product
 IDs, no window titles from unrelated apps.

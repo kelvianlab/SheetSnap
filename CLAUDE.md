@@ -1,7 +1,14 @@
 # SheetSnap — working rules
 
-SheetSnap turns a spreadsheet into a 2-page summary report. It ships as a single
-self-contained HTML file so a user downloads one file, opens it, and it works.
+SheetSnap turns a spreadsheet into a summary report in two parts: a per-sheet
+breakdown, then the whole file consolidated onto one A4 page. It ships as a
+single self-contained HTML file so a user downloads one file, opens it, and it
+works.
+
+**Say "two parts", never "two pages".** Part 1 prints as one block per sheet, so
+a twelve-sheet workbook runs to several pages. Only part 2 is guaranteed to fit
+a single A4 page, and the test suite enforces that. Any wording that promises a
+two-page printout is a bug.
 
 ## The product promise
 

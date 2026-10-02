@@ -2,7 +2,7 @@
   "name": "sheetsnap",
   "version": "1.0.0",
   "private": true,
-  "description": "Turn any Excel file into a clean 2-page summary report. Single self-contained HTML file.",
+  "description": "Turn any Excel file into a clean summary report: every sheet explained, plus the whole file on one page. Single self-contained HTML file.",
   "license": "MIT",
   "type": "module",
   "scripts": {

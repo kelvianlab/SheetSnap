@@ -20,7 +20,7 @@ const vendor = read('./src/vendor/xlsx.full.min.js');
 const app = read('./src/app.js');
 
 const banner = `/*!
- * SheetSnap - turn any Excel file into a clean 2-page summary.
+ * SheetSnap - turn any Excel file into a clean, printable summary.
  * This single file is fully self-contained: no server, no install, no network.
  * SheetSnap code: MIT License.
  * Bundled below: SheetJS (xlsx) 0.18.5, Apache License 2.0 - see THIRD-PARTY-NOTICES.md

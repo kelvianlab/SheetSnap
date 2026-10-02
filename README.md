@@ -2,7 +2,8 @@
 
 # SheetSnap
 
-**Drop in an Excel file. Press one button. Get a clean 2-page summary.**
+**Drop in an Excel file. Press one button.**
+**Get every sheet explained, plus the whole file summed up on one page.**
 
 No installing. No account. No internet. One file, and it works in any folder.
 
@@ -75,9 +76,11 @@ Then you can:
 
 ## What the report looks like
 
-The report is always **2 parts**.
+The report is always **2 parts**. Only part 2 is a single page — part 1 is one
+block per sheet, so a workbook with twelve sheets prints a longer part 1. That is
+deliberate: nothing is squeezed out to hit a page count.
 
-### Page 1 — one block for every sheet
+### Part 1 — one block for every sheet
 
 For each sheet in your file, you get:
 
@@ -101,12 +104,15 @@ For each sheet in your file, you get:
 Nothing is a black box. Every number names its column, its formula, and how many
 rows went into it, so you can check it yourself in Excel in ten seconds.
 
-If your workbook has many sheets, page 1 simply continues onto more printed
-sheets. One block per sheet, always complete.
+**How many printed pages is this?** As many as your workbook needs — one block
+per sheet, never truncated. Three sheets fit comfortably on one or two pages;
+twelve sheets will take more. The report itself tells you how many sheets it
+found, so there are no surprises when you press Print.
 
-### Page 2 — the whole file in one page
+### Part 2 — the whole file in one page
 
-Always **exactly one A4 page**. This is the page you show your boss.
+Always **exactly one A4 page**, whatever part 1 came to. This is the page you
+show your boss.
 
 - **Combined figures** across every sheet. Columns are matched **by name**, so a
   column that only appears in some sheets — one added halfway through the year,

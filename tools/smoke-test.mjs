@@ -52,6 +52,17 @@ await page.locator('#page2').waitFor({ state: 'visible', timeout: 15000 });
 ok('error box stayed hidden', await page.locator('#errBox').isHidden());
 ok('page 1 rendered', await page.locator('#page1').isVisible());
 
+/* Part 1 is one block per sheet, so its printed length depends on the workbook.
+   Only part 2 is a single page. The app must never promise a fixed page count:
+   a user with twelve sheets would read a broken promise as a broken tool. */
+const visible = await page.locator('body').innerText();
+ok('nothing on screen promises a fixed page count',
+   !/2-page|2 page|two-page/i.test(visible));
+ok('the two halves are labelled as parts, not pages',
+   /Part 1 of 2/i.test(visible) && /Part 2 of 2/i.test(visible));
+ok('part 1 states how many sheets it covers, so Print holds no surprise',
+   /4 sheets here/i.test(visible));
+
 /* three data sheets + one empty sheet = four blocks */
 const blocks = await page.locator('#page1 .sheet').count();
 ok('one block per sheet (4)', blocks === 4, `got ${blocks}`);

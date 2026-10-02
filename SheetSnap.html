@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SheetSnap</title>
-<meta name="description" content="Turn any Excel file into a clean 2-page summary report. Runs offline in your browser.">
+<meta name="description" content="Turn any Excel file into a clean summary: every sheet explained, plus the whole file on one page. Runs offline in your browser.">
 <style>
 /* ---------- design tokens ---------- */
 :root{
@@ -291,7 +291,7 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
     </svg>
     <div>
       <div class="brand-name">SheetSnap</div>
-      <div class="brand-tag">Excel &rarr; 2-page summary</div>
+      <div class="brand-tag">Excel &rarr; printable summary</div>
     </div>
   </div>
   <div class="appbar-right">
@@ -310,7 +310,7 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
   <!-- ============ STEP 1: pick a file ============ -->
   <section id="screenStart" class="no-print">
     <h1 class="h1">Make a summary of your Excel file</h1>
-    <p class="lede">Three steps. No installing, no account, no internet. Your file is read right here on your own computer.</p>
+    <p class="lede">Every sheet explained, plus the whole file summed up on one page. Three steps. No installing, no account, no internet &mdash; your file is read right here on your own computer.</p>
 
     <div id="drop" class="drop" tabindex="0" role="button" aria-label="Choose an Excel file, or drag one here">
       <svg class="drop-ico" viewBox="0 0 24 24" aria-hidden="true">
@@ -377,7 +377,7 @@ table.t tfoot td{font-weight:700;border-top:1px solid var(--border-strong);borde
 
 <script>
 /*!
- * SheetSnap - turn any Excel file into a clean 2-page summary.
+ * SheetSnap - turn any Excel file into a clean, printable summary.
  * This single file is fully self-contained: no server, no install, no network.
  * SheetSnap code: MIT License.
  * Bundled below: SheetJS (xlsx) 0.18.5, Apache License 2.0 - see THIRD-PARTY-NOTICES.md
@@ -978,7 +978,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     page.id = 'page1';
 
     var head = el('div', 'rhead');
-    head.appendChild(el('span', 'page-label', 'Page 1 of 2 - per-sheet breakdown'));
+    head.appendChild(el('span', 'page-label', 'Part 1 of 2 - per-sheet breakdown'));
     var h2 = el('h2', null, model.meta.title);
     head.appendChild(h2);
     head.appendChild(el('div', 'sub',
@@ -988,7 +988,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     page.appendChild(head);
 
     page.appendChild(el('p', 'page-note',
-      'One block per sheet. Each block answers What / Who / Where / When / Why / How, then lists the 5 most important numbers with the exact calculation behind each one.'));
+      'One block per sheet. Each block answers What / Who / Where / When / Why / How, then lists the 5 most important numbers with the exact calculation behind each one. ' +
+      'Printed, this part takes as many pages as it needs - ' + model.sheets.length +
+      ' sheet' + (model.sheets.length === 1 ? '' : 's') + ' here. Part 2 is always one page.'));
 
     model.sheets.forEach(function (s, i) {
       var box = el('div', 'sheet');
@@ -1043,7 +1045,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     page.id = 'page2';
 
     var head = el('div', 'rhead');
-    head.appendChild(el('span', 'page-label', 'Page 2 of 2 - whole-file summary'));
+    head.appendChild(el('span', 'page-label', 'Part 2 of 2 - whole-file summary, one A4 page'));
     head.appendChild(el('h2', null, 'Consolidated Summary'));
     head.appendChild(el('div', 'sub',
       'All ' + c.sheets.length + ' sheet' + (c.sheets.length === 1 ? '' : 's') + ' merged - ' +

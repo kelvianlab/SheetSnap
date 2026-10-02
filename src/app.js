@@ -569,7 +569,7 @@
     page.id = 'page1';
 
     var head = el('div', 'rhead');
-    head.appendChild(el('span', 'page-label', 'Page 1 of 2 - per-sheet breakdown'));
+    head.appendChild(el('span', 'page-label', 'Part 1 of 2 - per-sheet breakdown'));
     var h2 = el('h2', null, model.meta.title);
     head.appendChild(h2);
     head.appendChild(el('div', 'sub',
@@ -579,7 +579,9 @@
     page.appendChild(head);
 
     page.appendChild(el('p', 'page-note',
-      'One block per sheet. Each block answers What / Who / Where / When / Why / How, then lists the 5 most important numbers with the exact calculation behind each one.'));
+      'One block per sheet. Each block answers What / Who / Where / When / Why / How, then lists the 5 most important numbers with the exact calculation behind each one. ' +
+      'Printed, this part takes as many pages as it needs - ' + model.sheets.length +
+      ' sheet' + (model.sheets.length === 1 ? '' : 's') + ' here. Part 2 is always one page.'));
 
     model.sheets.forEach(function (s, i) {
       var box = el('div', 'sheet');
@@ -634,7 +636,7 @@
     page.id = 'page2';
 
     var head = el('div', 'rhead');
-    head.appendChild(el('span', 'page-label', 'Page 2 of 2 - whole-file summary'));
+    head.appendChild(el('span', 'page-label', 'Part 2 of 2 - whole-file summary, one A4 page'));
     head.appendChild(el('h2', null, 'Consolidated Summary'));
     head.appendChild(el('div', 'sub',
       'All ' + c.sheets.length + ' sheet' + (c.sheets.length === 1 ? '' : 's') + ' merged - ' +
